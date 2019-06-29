@@ -1,16 +1,50 @@
-window.addEventListener('load', function() {
+const keysToNodeTypes = {
+  "KeyC": "checkbox",
+  "KeyT": "text",
+  "KeyD": "done",
+  "KeyF": "failed",
+  "KeyW": "waiting",
+  "KeyQ": "idea",
+  "KeyX": "cancelled"
+};
+
+const nodeTypesToEmojis = {
+  "checkbox": "👉",
+  "text": "ℹ️",
+  "done": "✅",
+  "failed": "❌",
+  "waiting": "⏳",
+  "idea": "🦄",
+  "cancelled": "💤"
+};
+
+window.addEventListener("load", function() {
   updateVisibleList();
 
-  document.addEventListener('keydown', function(event) {
-    addElement(event.code);
+  document.addEventListener("keydown", function(event) {
+    if (event.code in keysToNodeTypes) {
+      addNode(keysToNodeTypes[event.code]);
+    }
+
+    if (event.code === "Backspace") {
+      removeLastElement();
+    }
+    console.log(event.code);
   });
 })
+
+function addNode(type) {
+  if (type in nodeTypesToEmojis) {
+    addElement(nodeTypesToEmojis[type]);
+  }
+  console.warn("Unrecognized node type: " + type);
+}
 
 function updateVisibleList() {
   var elementsWrapper = document.getElementById("code");
   const elements = getSavedElements();
 
-  elementsWrapper.innerHTML = '';
+  elementsWrapper.innerHTML = "";
 
   for (const element of elements) {
     // create a new div element
@@ -40,9 +74,16 @@ function addElement(element) {
   updateVisibleList();
 }
 
+function removeLastElement() {
+  let previous = getSavedElements();
+  previous.pop();
+  saveData(previous);
+  updateVisibleList();
+}
 
 
-const localStorageKey = 'todoapp-data';
+
+const localStorageKey = "todoapp-data";
 
 function saveData(blob) {
   const asText = JSON.stringify(blob)
