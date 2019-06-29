@@ -28,7 +28,7 @@ window.addEventListener("load", function() {
     if (event.code in keysToNodeTypes) {
       addNode(keysToNodeTypes[event.code]);
     } else if (event.code === "Backspace") {
-      removeLastElement();
+      removeElementUnderCursor();
     } else if (event.code === "ArrowDown") {
       cursorDown();
     } else if (event.code === "ArrowUp") {
@@ -111,9 +111,9 @@ function addElement(element) {
   updateVisibleList();
 }
 
-function removeLastElement() {
+function removeElementUnderCursor() {
   let previous = getSavedElements();
-  previous.pop();
+  previous.splice(cursorPosition, 1);
   saveData(previous);
   clampAndSaveCursorPosition();
   updateVisibleList();
