@@ -18,20 +18,57 @@ const nodeTypesToEmojis = {
   "cancelled": "💤"
 };
 
+let cursorPosition = 0;
+
 window.addEventListener("load", function() {
+  readCursorPositionFromHash();
   updateVisibleList();
 
   document.addEventListener("keydown", function(event) {
     if (event.code in keysToNodeTypes) {
       addNode(keysToNodeTypes[event.code]);
-    }
-
-    if (event.code === "Backspace") {
+    } else if (event.code === "Backspace") {
       removeLastElement();
+    } else if (event.code === "ArrowDown") {
+      cursorDown();
+    } else if (event.code === "ArrowUp") {
+      cursorUp();
     }
     console.log(event.code);
   });
-})
+});
+
+function readCursorPositionFromHash() {
+  const position = parseInt(document.location.hash.substr(1));
+  if (!isNaN(position)) {
+    cursorPosition = position;
+  } else {
+    cursorPosition = 0;
+  }
+  clampAndSaveCursorPosition();
+  updateVisibleList();
+}
+
+window.addEventListener("hashchange", readCursorPositionFromHash, false);
+
+function cursorDown() {
+  cursorPosition += 1;
+  clampAndSaveCursorPosition();
+  updateVisibleList();
+}
+
+function cursorUp() {
+  cursorPosition -= 1;
+  clampAndSaveCursorPosition();
+  updateVisibleList();
+}
+
+function clampAndSaveCursorPosition() {
+  cursorPosition = Math.min(getSavedElements().length - 1, cursorPosition);
+  cursorPosition = Math.max(0, cursorPosition);
+  document.location.hash = cursorPosition;
+  console.log(document.location.hash);
+}
 
 function addNode(type) {
   if (type in nodeTypesToEmojis) {
@@ -46,17 +83,17 @@ function updateVisibleList() {
 
   elementsWrapper.innerHTML = "";
 
-  for (const element of elements) {
-    // create a new div element
+  cursorPosition
+  elements.forEach(function(element, index) {
     var newDiv = document.createElement("div");
-    // and give it some content
     var newContent = document.createTextNode(element);
-    // add the text node to the newly created div
+    if (index === cursorPosition) {
+      newDiv.classList.add("cursor-node");
+    }
     newDiv.appendChild(newContent);
 
-    // add the newly created element and its content into the DOM
     elementsWrapper.appendChild(newDiv);
-  }
+  });
 }
 
 function getSavedElements() {
@@ -78,6 +115,7 @@ function removeLastElement() {
   let previous = getSavedElements();
   previous.pop();
   saveData(previous);
+  clampAndSaveCursorPosition();
   updateVisibleList();
 }
 
