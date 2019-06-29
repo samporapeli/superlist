@@ -72,7 +72,7 @@ function clampAndSaveCursorPosition() {
 
 function addNode(type) {
   if (type in nodeTypesToEmojis) {
-    addElement(nodeTypesToEmojis[type]);
+    addElementAfterIndex(nodeTypesToEmojis[type], cursorPosition);
   }
   console.warn("Unrecognized node type: " + type);
 }
@@ -104,10 +104,11 @@ function getSavedElements() {
   return data;
 }
 
-function addElement(element) {
+function addElementAfterIndex(element, index) {
   let previous = getSavedElements();
-  previous.push(element);
+  previous.splice(index+1, 0, element);
   saveData(previous);
+  cursorDown();
   updateVisibleList();
 }
 
@@ -115,7 +116,7 @@ function removeElementUnderCursor() {
   let previous = getSavedElements();
   previous.splice(cursorPosition, 1);
   saveData(previous);
-  clampAndSaveCursorPosition();
+  cursorUp();
   updateVisibleList();
 }
 
