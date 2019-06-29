@@ -19,24 +19,65 @@ const nodeTypesToEmojis = {
 };
 
 let cursorPosition = 0;
+let editMode = 0;
 
 window.addEventListener("load", function() {
   readCursorPositionFromHash();
   updateVisibleList();
 
   document.addEventListener("keydown", function(event) {
-    if (event.code in keysToNodeTypes) {
-      addNode(keysToNodeTypes[event.code]);
-    } else if (event.code === "Backspace") {
-      removeElementUnderCursor();
-    } else if (event.code === "ArrowDown") {
-      cursorDown();
-    } else if (event.code === "ArrowUp") {
-      cursorUp();
+    if (editMode === 1) {
+      if (event.code === "Enter") {
+        endEditMode();
+      }
+    } else {
+      if (event.code === "Enter") {
+        startEditMode();
+      } else if (event.code in keysToNodeTypes) {
+        addNode(keysToNodeTypes[event.code]);
+      } else if (event.code === "Backspace") {
+        removeElementUnderCursor();
+      } else if (event.code === "ArrowDown") {
+        cursorDown();
+        event.preventDefault();
+      } else if (event.code === "ArrowUp") {
+        cursorUp();
+        event.preventDefault();
+      }
+
     }
     console.log(event.code);
   });
 });
+
+function startEditMode() {
+  editMode = 1;
+  document.getElementById("status").innerText = "editing";
+
+  const element = getCursorElement();
+  var inputElement = document.createElement("input");
+  inputElement.classList.add("input-text");
+  inputElement.setAttribute("type", "text");
+  element.appendChild(inputElement);
+  inputElement.focus();
+}
+
+function getCursorElement() {
+  return document.getElementsByClassName("cursor-node")[0];
+}
+
+function endEditMode() {
+  editMode = 0;
+  document.getElementById("status").innerText = "viewing";
+
+  const element = getCursorElement();
+  const inputElement = document.getElementsByClassName("input-text")[0];
+  const newText = inputElement.value;
+  var textElement = document.createElement("span");
+  textElement.innerText = newText;
+  element.appendChild(textElement);
+  element.removeChild(inputElement);
+}
 
 function readCursorPositionFromHash() {
   const position = parseInt(document.location.hash.substr(1));
