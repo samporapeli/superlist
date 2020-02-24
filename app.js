@@ -38,7 +38,7 @@ window.addEventListener("load", function() {
             if (event.code === "Enter") {
                 endEditMode();
             }
-            
+
         } else if ((pressedKeys.MetaLeft || pressedKeys.MetaRight) && (pressedKeys.AltLeft || pressedKeys.AltRight)) {
             if (event.code === "ArrowDown") {
                 swapDown();
@@ -106,17 +106,26 @@ window.addEventListener("load", function() {
                     updateVisibleList();
 
                 } else if (event.code === "ArrowDown") {
-                    cursorDown();
+                    cursorToNextSibling();
                     updateVisibleList();
                     event.preventDefault();
 
                 } else if (event.code === "ArrowUp") {
-                    cursorUp();
+                    cursorToPreviousSibling();
+                    updateVisibleList();
+                    event.preventDefault();
+
+                } else if (event.code === "ArrowRight") {
+                    cursorToFirstChild();
+                    updateVisibleList();
+                    event.preventDefault();
+
+                } else if (event.code === "ArrowLeft") {
+                    cursorToParent();
                     updateVisibleList();
                     event.preventDefault();
                 }
             }
-
         }
         console.log(event.code);
     });
@@ -219,6 +228,76 @@ function removeElementUnderCursor() {
     saveData(previous);
     cursorUp();
 }
+
+// Navigation with indentations
+
+function cursorToNextSibling() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition + 1;
+    while (index <= getSavedElements().length - 1) {
+        if (elements[index].indentation == startingPointIndentation) {
+            cursorPosition = index;
+            clampAndSaveCursorPosition();
+            return;
+        }
+        if (elements[index].indentation < startingPointIndentation) {
+            return;
+        }
+
+        index += 1;
+    }
+}
+
+function cursorToPreviousSibling() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition - 1;
+    while (index >= 0) {
+        if (elements[index].indentation == startingPointIndentation) {
+            cursorPosition = index;
+            clampAndSaveCursorPosition();
+            return;
+        }
+        if (elements[index].indentation < startingPointIndentation) {
+            return;
+        }
+
+        index -= 1;
+    }
+}
+
+function cursorToFirstChild() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    if (cursorPosition == getSavedElements().length - 1) {
+        return;
+    }
+
+    if (elements[cursorPosition + 1].indentation > startingPointIndentation) {
+        cursorDown();
+    }
+}
+
+function cursorToParent() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition - 1;
+    while (index >= 0) {
+        if (elements[index].indentation < startingPointIndentation) {
+            cursorPosition = index;
+            clampAndSaveCursorPosition();
+            return;
+        }
+
+        index -= 1;
+    }
+}
+
 
 // Adding
 
