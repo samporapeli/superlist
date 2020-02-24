@@ -55,9 +55,15 @@ function startEditMode() {
   document.getElementById("status").innerText = "editing";
 
   const element = getCursorElement();
+  const text = getTextUnderCursor();
+
+  const span = element.getElementsByTagName("span")[0];
+  element.removeChild(span);
+
   var inputElement = document.createElement("input");
   inputElement.classList.add("input-text");
   inputElement.setAttribute("type", "text");
+  inputElement.value = text;
   element.appendChild(inputElement);
   inputElement.focus();
 }
@@ -69,14 +75,10 @@ function getCursorElement() {
 function endEditMode() {
   editMode = 0;
   document.getElementById("status").innerText = "viewing";
-
-  const element = getCursorElement();
   const inputElement = document.getElementsByClassName("input-text")[0];
   const newText = inputElement.value;
-  var textElement = document.createElement("span");
-  textElement.innerText = newText;
-  element.appendChild(textElement);
-  element.removeChild(inputElement);
+  setTextUnderCursor(newText);
+  updateVisibleList();
 }
 
 function readCursorPositionFromHash() {
@@ -113,7 +115,7 @@ function clampAndSaveCursorPosition() {
 
 function addNode(type) {
   if (type in nodeTypesToEmojis) {
-    addElementAfterIndex(nodeTypesToEmojis[type], cursorPosition);
+    addEmptyElementAfterIndex(type, cursorPosition);
   }
   console.warn("Unrecognized node type: " + type);
 }
@@ -127,11 +129,16 @@ function updateVisibleList() {
   cursorPosition
   elements.forEach(function(element, index) {
     var newDiv = document.createElement("div");
-    var newContent = document.createTextNode(element);
+    var newContent = document.createTextNode(nodeTypesToEmojis[element.type] + " ");
     if (index === cursorPosition) {
       newDiv.classList.add("cursor-node");
     }
     newDiv.appendChild(newContent);
+
+    var textElement = document.createElement("span");
+    textElement.innerText = element.text;
+    newDiv.appendChild(textElement);
+    //element.removeChild(inputElement);
 
     elementsWrapper.appendChild(newDiv);
   });
@@ -145,7 +152,8 @@ function getSavedElements() {
   return data;
 }
 
-function addElementAfterIndex(element, index) {
+function addEmptyElementAfterIndex(type, index) {
+  let element = {"type": type, "text": ""};
   let previous = getSavedElements();
   previous.splice(index+1, 0, element);
   saveData(previous);
@@ -159,6 +167,18 @@ function removeElementUnderCursor() {
   saveData(previous);
   cursorUp();
   updateVisibleList();
+}
+
+function setTextUnderCursor(text) {
+    let previous = getSavedElements();
+    previous[cursorPosition].text = text;
+    saveData(previous);
+    updateVisibleList();
+}
+
+function getTextUnderCursor() {
+    let previous = getSavedElements();
+    return previous[cursorPosition].text;
 }
 
 
