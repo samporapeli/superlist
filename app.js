@@ -43,6 +43,12 @@ window.addEventListener("load", function() {
       } else if (event.code === "ArrowUp") {
         cursorUp();
         event.preventDefault();
+      } else if (event.code === "ArrowRight") {
+        increaseIndentUnderCursor();
+        event.preventDefault();
+      } else if (event.code === "ArrowLeft") {
+        decreaseIndentUnderCursor();
+        event.preventDefault();
       }
 
     }
@@ -81,6 +87,8 @@ function endEditMode() {
   updateVisibleList();
 }
 
+
+
 function readCursorPositionFromHash() {
   const position = parseInt(document.location.hash.substr(1));
   if (!isNaN(position)) {
@@ -113,6 +121,8 @@ function clampAndSaveCursorPosition() {
   console.log(document.location.hash);
 }
 
+
+
 function addNode(type) {
   if (type in nodeTypesToEmojis) {
     addEmptyElementAfterIndex(type, cursorPosition);
@@ -126,10 +136,10 @@ function updateVisibleList() {
 
   elementsWrapper.innerHTML = "";
 
-  cursorPosition
   elements.forEach(function(element, index) {
     var newDiv = document.createElement("div");
-    var newContent = document.createTextNode(nodeTypesToEmojis[element.type] + " ");
+    let padding = " " + "- ".repeat(element.indentation);
+    var newContent = document.createTextNode(nodeTypesToEmojis[element.type] + padding);
     if (index === cursorPosition) {
       newDiv.classList.add("cursor-node");
     }
@@ -138,7 +148,6 @@ function updateVisibleList() {
     var textElement = document.createElement("span");
     textElement.innerText = element.text;
     newDiv.appendChild(textElement);
-    //element.removeChild(inputElement);
 
     elementsWrapper.appendChild(newDiv);
   });
@@ -153,7 +162,7 @@ function getSavedElements() {
 }
 
 function addEmptyElementAfterIndex(type, index) {
-  let element = {"type": type, "text": ""};
+  let element = {"type": type, "text": "", "indentation": 0};
   let previous = getSavedElements();
   previous.splice(index+1, 0, element);
   saveData(previous);
@@ -179,6 +188,22 @@ function setTextUnderCursor(text) {
 function getTextUnderCursor() {
     let previous = getSavedElements();
     return previous[cursorPosition].text;
+}
+
+function increaseIndentUnderCursor(text) {
+    let previous = getSavedElements();
+    let curr = previous[cursorPosition].indentation || 0;
+    previous[cursorPosition].indentation = curr + 1;
+    saveData(previous);
+    updateVisibleList();
+}
+
+function decreaseIndentUnderCursor(text) {
+    let previous = getSavedElements();
+    let curr = previous[cursorPosition].indentation || 0;
+    previous[cursorPosition].indentation = Math.max(0, curr - 1);
+    saveData(previous);
+    updateVisibleList();
 }
 
 
