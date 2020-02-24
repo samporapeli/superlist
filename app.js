@@ -29,7 +29,6 @@ window.addEventListener("load", function() {
 
   document.addEventListener("keydown", function(event) {
     pressedKeys[event.code] = true;
-    console.log(pressedKeys);
 
     if ((pressedKeys.MetaLeft || pressedKeys.MetaRight) && (pressedKeys.AltLeft || pressedKeys.AltRight)) {
         if (event.code === "ArrowDown") {
@@ -55,7 +54,8 @@ window.addEventListener("load", function() {
       if (event.code === "Enter") {
         startEditMode();
       } else if (event.code in keysToNodeTypes) {
-        addNode(keysToNodeTypes[event.code]);
+        setTypeUnderCursor(keysToNodeTypes[event.code]);
+        updateVisibleList();
       } else if (event.code === "Backspace") {
         removeElementUnderCursor();
       } else if (event.code === "ArrowDown") {
@@ -157,8 +157,8 @@ function updateVisibleList() {
 
   elements.forEach(function(element, index) {
     var newDiv = document.createElement("div");
-    let padding = " " + "- ".repeat(element.indentation);
-    var newContent = document.createTextNode(nodeTypesToEmojis[element.type] + padding);
+    let padding = "— ".repeat(element.indentation);
+    var newContent = document.createTextNode(padding + nodeTypesToEmojis[element.type] + " ");
     if (index === cursorPosition) {
       newDiv.classList.add("cursor-node");
     }
@@ -178,6 +178,13 @@ function getSavedElements() {
     data = [];
   }
   return data;
+}
+
+function setTypeUnderCursor(type) {
+    let previous = getSavedElements();
+    previous[cursorPosition].type = type;
+    saveData(previous);
+    updateVisibleList();
 }
 
 function addEmptyElementAfterIndex(type, index) {
