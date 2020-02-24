@@ -18,14 +18,35 @@ const nodeTypesToEmojis = {
   "cancelled": "💤"
 };
 
+
 let cursorPosition = 0;
 let editMode = 0;
+var pressedKeys = {};
 
 window.addEventListener("load", function() {
   readCursorPositionFromHash();
   updateVisibleList();
 
   document.addEventListener("keydown", function(event) {
+    pressedKeys[event.code] = true;
+    console.log(pressedKeys);
+
+    if ((pressedKeys.MetaLeft || pressedKeys.MetaRight) && (pressedKeys.AltLeft || pressedKeys.AltRight)) {
+        if (event.code === "ArrowDown") {
+          swapDown();
+          event.preventDefault();
+        } else if (event.code === "ArrowUp") {
+          swapUp();
+          event.preventDefault();
+        } else if (event.code === "ArrowRight") {
+          increaseIndentUnderCursor();
+          event.preventDefault();
+        } else if (event.code === "ArrowLeft") {
+          decreaseIndentUnderCursor();
+          event.preventDefault();
+        }
+    }
+
     if (editMode === 1) {
       if (event.code === "Enter") {
         endEditMode();
@@ -43,16 +64,14 @@ window.addEventListener("load", function() {
       } else if (event.code === "ArrowUp") {
         cursorUp();
         event.preventDefault();
-      } else if (event.code === "ArrowRight") {
-        increaseIndentUnderCursor();
-        event.preventDefault();
-      } else if (event.code === "ArrowLeft") {
-        decreaseIndentUnderCursor();
-        event.preventDefault();
       }
 
     }
     console.log(event.code);
+  });
+
+  document.addEventListener("keyup", function(event) {
+    pressedKeys[event.code] = false;
   });
 });
 
@@ -176,6 +195,25 @@ function removeElementUnderCursor() {
   saveData(previous);
   cursorUp();
   updateVisibleList();
+}
+
+function swapDown() {
+    swap(cursorPosition, cursorPosition + 1);
+}
+
+function swapUp() {
+    swap(cursorPosition - 1, cursorPosition);
+}
+
+function swap(a, b) {
+    let previous = getSavedElements();
+    if (a < 0 || a >= previous.length || b < 0 || b >= previous.length) {
+        return;
+    }
+    let temp = previous[a];
+    previous[a] = previous[b];
+    previous[b] = temp;
+    saveData(previous);
 }
 
 function setTextUnderCursor(text) {
