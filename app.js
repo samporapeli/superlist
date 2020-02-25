@@ -159,7 +159,6 @@ window.addEventListener("load", function() {
 
 function startEditMode() {
     editMode = 1;
-    document.getElementById("status").innerText = "editing";
 
     const element = getCursorElement();
     console.log(element);
@@ -187,7 +186,6 @@ function getTextUnderCursor() {
 
 function endEditMode() {
     editMode = 0;
-    document.getElementById("status").innerText = "viewing";
     const inputElement = document.getElementsByClassName("input-text")[0];
     const newText = inputElement.value;
     setTextUnderCursor(newText);
