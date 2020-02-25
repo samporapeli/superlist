@@ -333,6 +333,13 @@ function swapUp() {
 function increaseIndentUnderCursor(text) {
     let previous = getSavedElements();
     let curr = previous[cursorPosition].indentation || 0;
+
+    // Can't indentate first child
+    const parent = getIndexOfParent();
+    if (cursorPosition === 0 || parent === cursorPosition - 1) {
+        return;
+    }
+
     previous[cursorPosition].indentation = curr + 1;
     saveData(previous);
 }
