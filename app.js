@@ -141,6 +141,10 @@ window.addEventListener("load", function() {
         }
     });
 
+    window.addEventListener("focus", event => {
+        pressedKeys = {};
+    }, false);
+
     const button = document.querySelector("button");
     button.addEventListener("click", event => {
         importDataFromTextBox();
