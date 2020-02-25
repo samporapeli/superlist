@@ -258,7 +258,7 @@ function removeElementUnderCursor() {
     let previous = getSavedElements();
     previous.splice(cursorPosition, 1);
     saveData(previous);
-    cursorUp();
+    cursorToPreviousSibling();
 }
 
 // Navigation with indentations
@@ -266,32 +266,28 @@ function removeElementUnderCursor() {
 function cursorToNextSibling() {
     let index = getIndexOfNextSibling();
     if (index !== undefined) {
-        cursorPosition = index;
-        clampAndSaveCursorPosition();
+        cursorTo(index);
     }
 }
 
 function cursorToPreviousSibling() {
     let index = getIndexOfPreviousSibling();
     if (index !== undefined) {
-        cursorPosition = index;
-        clampAndSaveCursorPosition();
+        cursorTo(index);
     }
 }
 
 function cursorToFirstChild() {
     let index = getIndexOfFirstChild();
     if (index !== undefined) {
-        cursorPosition = index;
-        clampAndSaveCursorPosition();
+        cursorTo(index);
     }
 }
 
 function cursorToParent() {
-    let parentIndex = getIndexOfParent();
-    if (parentIndex !== undefined) {
-        cursorPosition = parentIndex;
-        clampAndSaveCursorPosition();
+    let index = getIndexOfParent();
+    if (index !== undefined) {
+        cursorTo(index);
     }
 }
 
@@ -300,8 +296,9 @@ function cursorToParent() {
 
 function addNodeDown(type) {
     const indentation = getIndentationAtCursor();
-    addEmptyElementAtIndex(type, cursorPosition+1, indentation);
-    cursorDown();
+    const index = getIndexOfLastAncestor() + 1;
+    addEmptyElementAtIndex(type, index, indentation);
+    cursorTo(index);
 }
 
 function addNodeUp(type) {
@@ -365,11 +362,9 @@ function swap(a, b) {
     previous[b] = temp;
 
     if (cursorPosition == a) {
-        cursorPosition = b;
-        clampAndSaveCursorPosition();
+        cursorTo(b);
     } else if (cursorPosition == b) {
-        cursorPosition = a;
-        clampAndSaveCursorPosition();
+        cursorTo(a);
     }
     saveData(previous);
 }
@@ -391,12 +386,15 @@ function addEmptyElementAtIndex(type, index, indentation) {
 let cursorPosition = 0;
 
 function cursorDown() {
-    cursorPosition += 1;
-    clampAndSaveCursorPosition();
+    cursorTo(cursorPosition + 1);
 }
 
 function cursorUp() {
-    cursorPosition -= 1;
+    cursorTo(cursorPosition - 1);
+}
+
+function cursorTo(index) {
+    cursorPosition = index;
     clampAndSaveCursorPosition();
 }
 
@@ -410,11 +408,10 @@ function clampAndSaveCursorPosition() {
 function readCursorPositionFromHash() {
     const position = parseInt(document.location.hash.substr(1));
     if (!isNaN(position)) {
-        cursorPosition = position;
+        cursorTo(position);
     } else {
-        cursorPosition = 0;
+        cursorTo(0);
     }
-    clampAndSaveCursorPosition();
 }
 
 window.addEventListener("hashchange", readCursorPositionFromHash, false);
