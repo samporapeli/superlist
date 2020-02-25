@@ -256,9 +256,19 @@ function setTypeUnderCursor(type) {
 
 function removeElementUnderCursor() {
     let previous = getSavedElements();
+    if (getIndexOfLastAncestor() > cursorPosition) {
+        alert("Can't remove an element with ancestors.");
+        return;
+    }
+    let index = getIndexOfPreviousSibling();
+    if (index === undefined) {
+        // if no siblings, go to parent
+        index = (getIndexOfNextSibling() || cursorPosition) - 1;
+        index = Math.max(0, index);
+    }
     previous.splice(cursorPosition, 1);
     saveData(previous);
-    cursorToPreviousSibling();
+    cursorTo(index);
 }
 
 // Navigation with indentations
