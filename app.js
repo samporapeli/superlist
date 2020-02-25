@@ -51,12 +51,12 @@ window.addEventListener("load", function() {
                 event.preventDefault();
 
             } else if (event.code === "ArrowRight") {
-                increaseIndentUnderCursor();
+                increaseIndent();
                 updateVisibleList();
                 event.preventDefault();
 
             } else if (event.code === "ArrowLeft") {
-                decreaseIndentUnderCursor();
+                decreaseIndent();
                 updateVisibleList();
                 event.preventDefault();
             }
@@ -325,7 +325,7 @@ function addNodeRight(type) {
 
 function addNodeLeft(type) {
     const indentation = getIndentationAtCursor();
-    increaseIndentUnderCursor();
+    increaseIndent();
     addEmptyElementAtIndex(type, cursorPosition, indentation);
     cursorUp();
 }
@@ -333,14 +333,28 @@ function addNodeLeft(type) {
 // Grab
 
 function swapDown() {
-    swap(cursorPosition, cursorPosition + 1);
+    const first = cursorPosition;
+    const last = getIndexOfLastAncestor();
+    const to = getIndexOfLastAncestorOfNextSibling();
+    if (to === undefined) {
+        return;
+    }
+    moveRangeToPosition(first, last, to);
+    cursorTo(to - last + first);
 }
 
 function swapUp() {
-    swap(cursorPosition - 1, cursorPosition);
+    const first = cursorPosition;
+    const last = getIndexOfLastAncestor();
+    const to = getIndexOfPreviousSibling();
+    if (to === undefined) {
+        return;
+    }
+    moveRangeToPosition(first, last, to);
+    cursorTo(to);
 }
 
-function increaseIndentUnderCursor(text) {
+function increaseIndent() {
     let previous = getSavedElements();
     let curr = previous[cursorPosition].indentation || 0;
 
@@ -350,15 +364,39 @@ function increaseIndentUnderCursor(text) {
         return;
     }
 
-    previous[cursorPosition].indentation = curr + 1;
+    const lastAncestor = getIndexOfLastAncestor();
+    for (let index = cursorPosition; index <= lastAncestor; index++) {
+        previous[index].indentation += 1;
+        console.log(index);
+    }
+
     saveData(previous);
 }
 
-function decreaseIndentUnderCursor(text) {
+function decreaseIndent() {
     let previous = getSavedElements();
     let curr = previous[cursorPosition].indentation || 0;
-    previous[cursorPosition].indentation = Math.max(0, curr - 1);
+    if (curr === 0) {
+        return;
+    }
+
+    // Move to last sibling (but not yet)
+    const first = cursorPosition;
+    const last = getIndexOfLastAncestor();
+    const to = getIndexOfLastAncestorOfParent();
+
+    // Decrease indent
+    const lastAncestor = getIndexOfLastAncestor();
+    for (let index = cursorPosition; index <= lastAncestor; index++) {
+        previous[index].indentation -= 1;
+    }
     saveData(previous);
+
+    // Do the moving
+    moveRangeToPosition(first, last, to);
+    console.log("moving", first, last, to)
+    cursorTo(to - last + first);
+
 }
 
 // Action helpers
@@ -571,7 +609,7 @@ function getIndexOfLastAncestor() {
     return elements.length - 1;
 }
 
-function getIndexAfterAllAncestorsOfNextSibling() {
+function getIndexOfLastAncestorOfNextSibling() {
     let elements = getSavedElements();
     const startingPointIndentation = getIndentationAtCursor();
 
