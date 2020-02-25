@@ -386,6 +386,49 @@ function swap(a, b) {
     saveData(previous);
 }
 
+function moveRangeToPosition(firstIndex, lastIndex, indexToMoveTo) {
+    if (firstIndex > lastIndex) {
+        console.log("moveRangeToPosition firstIndex must be <= lastIndex");
+        return;
+    }
+
+    let elements = getSavedElements();
+    let temp = elements.slice(firstIndex, lastIndex+1);
+    const chunkLength = lastIndex+1 - firstIndex;
+
+    if (indexToMoveTo < firstIndex) {
+        // Make space for the moving elements
+        let pointer = lastIndex;
+        while (pointer >= indexToMoveTo + chunkLength) {
+            elements[pointer] = elements[pointer - chunkLength];
+            pointer -= 1;
+        }
+
+        // Copy moving elements to new place
+        temp.forEach(function(element, index) {
+            elements[indexToMoveTo + index] = element;
+        });
+    } else if (indexToMoveTo > lastIndex) {
+        // Make space for the moving elements
+        let pointer = firstIndex;
+        while (pointer <= indexToMoveTo - chunkLength) {
+            elements[pointer] = elements[pointer + chunkLength];
+            pointer += 1;
+        }
+
+        // Copy moving elements to new place
+        temp.forEach(function(element, index) {
+            elements[indexToMoveTo - (chunkLength - 1) + index] = element;
+        });
+
+    } else {
+        // Moved to the same place
+        return;
+    }
+
+    saveData(elements);
+}
+
 function addEmptyElementAtIndex(type, index, indentation) {
     let element = {"type": type, "text": "", "indentation": indentation};
     let previous = getSavedElements();
