@@ -140,6 +140,13 @@ window.addEventListener("load", function() {
             }
         }
     });
+
+    const button = document.querySelector("button");
+    button.addEventListener("click", event => {
+        importDataFromTextBox();
+        cursorTo(0);
+        updateVisibleList();
+    });
 });
 
 
@@ -186,6 +193,7 @@ function endEditMode() {
 function updateVisibleList() {
     var elementsWrapper = document.getElementById("code");
     const elements = getSavedElements();
+    saveData(elements); // update the text box
 
     elementsWrapper.innerHTML = "";
 
@@ -403,6 +411,9 @@ function decreaseIndent() {
 
 function getIndentationAtCursor() {
     let previous = getSavedElements();
+    if (previous.length == 0) {
+        return 0;
+    }
     return previous[cursorPosition].indentation;
 }
 
@@ -640,14 +651,38 @@ function getSavedElements() {
     return data;
 }
 
-const localStorageKey = "todoapp-data";
-
 function saveData(blob) {
     const asText = JSON.stringify(blob)
-    localStorage.setItem(localStorageKey, asText);
+    saveEncodedData(asText);
+    exportDataToTextBox(asText);
 }
 
 function loadData() {
-    const asText = localStorage.getItem(localStorageKey);
+    const asText = loadEncodedData();
     return JSON.parse(asText);
+}
+
+const localStorageKey = "todoapp-data";
+
+function saveEncodedData(text) {
+    localStorage.setItem(localStorageKey, text);
+}
+
+function loadEncodedData() {
+    return localStorage.getItem(localStorageKey);
+}
+
+function importDataFromTextBox() {
+    const exportBox = document.getElementById("export-data");
+    let text = exportBox.value;
+    if (text.length === 0) {
+        alert("Can't load empty data")
+    }
+    saveEncodedData(text);
+    console.log("textbox content", text);
+}
+
+function exportDataToTextBox(text) {
+    const exportBox = document.getElementById("export-data");
+    exportBox.value = text;
 }
