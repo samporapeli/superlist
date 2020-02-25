@@ -189,20 +189,52 @@ function updateVisibleList() {
 
     elementsWrapper.innerHTML = "";
 
+    let smallestIndentation = Math.max(0, getIndentationAtCursor() - 1);
+    let minIndex = getIndexOfParent() || 0;
+    let maxIndex = getIndexOfLastAncestorOfParent();
+
+    let lastIndentation = 0;
     elements.forEach(function(element, index) {
-        var newDiv = document.createElement("div");
-        let padding = "— ".repeat(element.indentation);
-        var newContent = document.createTextNode(padding + nodeTypesToEmojis[element.type] + " ");
-        if (index === cursorPosition) {
-            newDiv.classList.add("cursor-node");
+
+        if (index >= minIndex && index <= maxIndex) {
+            // && element.indentation <= smallestIndentation + 1) {
+            let padding = "— ".repeat(element.indentation);// - smallestIndentation);
+
+            if (element.indentation <= smallestIndentation + 1) {
+                var newDiv = document.createElement("div");
+                var newContent = document.createTextNode(padding + nodeTypesToEmojis[element.type] + " ");
+                if (index === cursorPosition) {
+                    newDiv.classList.add("cursor-node");
+                }
+                newDiv.appendChild(newContent);
+
+                var textElement = document.createElement("span");
+                textElement.innerText = element.text;
+                newDiv.appendChild(textElement);
+
+                elementsWrapper.appendChild(newDiv);
+
+            } else if (element.indentation == smallestIndentation + 2) {
+                let emoji = nodeTypesToEmojis[element.type];
+                if (element.indentation > lastIndentation) {
+                    var paddingSpan = document.createElement("span");
+                    var paddingText = document.createTextNode(padding);
+                    paddingSpan.appendChild(paddingText);
+                    elementsWrapper.appendChild(paddingSpan);
+
+                    var newSpan = document.createElement("span");
+                    newSpan.classList.add("children-list");
+                    var newContent = document.createTextNode(emoji);
+                    newSpan.appendChild(newContent);
+                    elementsWrapper.appendChild(newSpan);
+                } else {
+                    let spans = elementsWrapper.getElementsByTagName("span");
+                    let span = spans[spans.length - 1];
+                    span.innerText += " " + emoji;
+                }
+            }
         }
-        newDiv.appendChild(newContent);
-
-        var textElement = document.createElement("span");
-        textElement.innerText = element.text;
-        newDiv.appendChild(textElement);
-
-        elementsWrapper.appendChild(newDiv);
+        lastIndentation = element.indentation;
     });
 }
 
@@ -232,69 +264,34 @@ function removeElementUnderCursor() {
 // Navigation with indentations
 
 function cursorToNextSibling() {
-    let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
-
-    let index = cursorPosition + 1;
-    while (index <= getSavedElements().length - 1) {
-        if (elements[index].indentation == startingPointIndentation) {
-            cursorPosition = index;
-            clampAndSaveCursorPosition();
-            return;
-        }
-        if (elements[index].indentation < startingPointIndentation) {
-            return;
-        }
-
-        index += 1;
+    let index = getIndexOfNextSibling();
+    if (index !== undefined) {
+        cursorPosition = index;
+        clampAndSaveCursorPosition();
     }
 }
 
 function cursorToPreviousSibling() {
-    let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
-
-    let index = cursorPosition - 1;
-    while (index >= 0) {
-        if (elements[index].indentation == startingPointIndentation) {
-            cursorPosition = index;
-            clampAndSaveCursorPosition();
-            return;
-        }
-        if (elements[index].indentation < startingPointIndentation) {
-            return;
-        }
-
-        index -= 1;
+    let index = getIndexOfPreviousSibling();
+    if (index !== undefined) {
+        cursorPosition = index;
+        clampAndSaveCursorPosition();
     }
 }
 
 function cursorToFirstChild() {
-    let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
-
-    if (cursorPosition == getSavedElements().length - 1) {
-        return;
-    }
-
-    if (elements[cursorPosition + 1].indentation > startingPointIndentation) {
-        cursorDown();
+    let index = getIndexOfFirstChild();
+    if (index !== undefined) {
+        cursorPosition = index;
+        clampAndSaveCursorPosition();
     }
 }
 
 function cursorToParent() {
-    let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
-
-    let index = cursorPosition - 1;
-    while (index >= 0) {
-        if (elements[index].indentation < startingPointIndentation) {
-            cursorPosition = index;
-            clampAndSaveCursorPosition();
-            return;
-        }
-
-        index -= 1;
+    let parentIndex = getIndexOfParent();
+    if (parentIndex !== undefined) {
+        cursorPosition = parentIndex;
+        clampAndSaveCursorPosition();
     }
 }
 
@@ -421,6 +418,120 @@ function readCursorPositionFromHash() {
 }
 
 window.addEventListener("hashchange", readCursorPositionFromHash, false);
+
+
+
+// Hierarchical navigation
+function getIndexOfParent() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition - 1;
+    while (index >= 0) {
+        if (elements[index].indentation < startingPointIndentation) {
+            return index;
+        }
+
+        index -= 1;
+    }
+}
+
+function getIndexOfLastAncestorOfParent() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition + 1;
+    while (index < elements.length) {
+        if (elements[index].indentation < startingPointIndentation) {
+            return index - 1;
+        }
+
+        index += 1;
+    }
+    return elements.length - 1;
+}
+
+
+function getIndexOfFirstChild() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    if (cursorPosition == getSavedElements().length - 1) {
+        return;
+    }
+
+    if (elements[cursorPosition + 1].indentation > startingPointIndentation) {
+        return cursorPosition + 1;
+    }
+}
+
+function getIndexOfNextSibling() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition + 1;
+    while (index < elements.length) {
+        if (elements[index].indentation == startingPointIndentation) {
+            return index;
+        }
+        if (elements[index].indentation < startingPointIndentation) {
+            return;
+        }
+
+        index += 1;
+    }
+}
+
+function getIndexOfPreviousSibling() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition - 1;
+    while (index >= 0) {
+        if (elements[index].indentation == startingPointIndentation) {
+            return index;
+        }
+        if (elements[index].indentation < startingPointIndentation) {
+            return;
+        }
+
+        index -= 1;
+    }
+}
+
+function getIndexOfLastAncestor() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let index = cursorPosition + 1;
+    while (index < elements.length) {
+        if (elements[index].indentation <= startingPointIndentation) {
+            return index - 1;
+        }
+
+        index += 1;
+    }
+    return elements.length - 1;
+}
+
+function getIndexAfterAllAncestorsOfNextSibling() {
+    let elements = getSavedElements();
+    const startingPointIndentation = getIndentationAtCursor();
+
+    let sibling = getIndexOfNextSibling();
+    if (sibling === undefined) {
+        return undefined;
+    }
+
+    let index = sibling + 1;
+    while (index < elements.length) {
+        if (elements[index].indentation <= startingPointIndentation) {
+            return index - 1;
+        }
+
+        index += 1;
+    }
+}
 
 
 
