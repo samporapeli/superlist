@@ -189,7 +189,7 @@ function updateVisibleList() {
 
     elementsWrapper.innerHTML = "";
 
-    let smallestIndentation = Math.max(0, getIndentationAtCursor() - 1);
+    let smallestIndentation = getIndentationAtCursor() - 1;
     let minIndex = getIndexOfParent() || 0;
     let maxIndex = getIndexOfLastAncestorOfParent();
 
