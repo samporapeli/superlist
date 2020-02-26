@@ -279,7 +279,7 @@ function updateVisibleList() {
 
         if (index >= minIndex && index <= maxIndex) {
             // && element.indentation <= smallestIndentation + 1) {
-            let padding = "— ".repeat(element.indentation);// - smallestIndentation);
+            let padding = " " + "— ".repeat(element.indentation);// - smallestIndentation);
             let paddingSpan = document.createElement("div");
             let paddingText = document.createTextNode(padding);
             paddingSpan.classList.add("padding-lines");
