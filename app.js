@@ -20,7 +20,7 @@ const nodeTypesToEmojis = {
 
 
 let editMode = 0;
-
+let deadlineEditMode = 0;
 
 
 // Keyboard mapping
@@ -37,6 +37,11 @@ window.addEventListener("load", function() {
         if (editMode === 1) {
             if (event.code === "Enter") {
                 endEditMode();
+            }
+
+        } else if (deadlineEditMode === 1) {
+            if (event.code === "KeyS" || event.code === "Enter") {
+                endDeadlineEditMode();
             }
 
         } else if ((pressedKeys.MetaLeft || pressedKeys.MetaRight) && (pressedKeys.AltLeft || pressedKeys.AltRight)) {
@@ -101,6 +106,10 @@ window.addEventListener("load", function() {
                 if (event.code === "Enter") {
                     startEditMode();
 
+                } else if (event.code === "KeyS") {
+                    startDeadlineEditMode();
+                    event.preventDefault();
+
                 } else if (event.code === "Backspace") {
                     removeElementUnderCursor();
                     updateVisibleList();
@@ -133,7 +142,7 @@ window.addEventListener("load", function() {
     document.addEventListener("keyup", function(event) {
         pressedKeys[event.code] = false;
 
-        if (editMode === 0) {
+        if (editMode === 0 && deadlineEditMode === 0) {
             if (event.code in keysToNodeTypes) {
                 setTypeUnderCursor(keysToNodeTypes[event.code]);
                 updateVisibleList();
@@ -161,7 +170,6 @@ function startEditMode() {
     editMode = 1;
 
     const element = getCursorElement();
-    console.log(element);
     const text = getTextUnderCursor();
 
     const span = element.getElementsByTagName("span")[0];
@@ -189,6 +197,73 @@ function endEditMode() {
     const inputElement = document.getElementsByClassName("input-text")[0];
     const newText = inputElement.value;
     setTextUnderCursor(newText);
+    updateVisibleList();
+}
+
+function startDeadlineEditMode() {
+    deadlineEditMode = 1;
+
+    const element = getCursorElement();
+    const deadline = getDeadlineUnderCursor();
+
+    const span = element.getElementsByClassName("deadline")[0];
+    span.innerText = "";
+
+    function addInputWithClass(classname, value) {
+        let inputElement = document.createElement("input");
+        inputElement.classList.add("input-text");
+        inputElement.classList.add(classname);
+        inputElement.setAttribute("type", "text");
+        inputElement.value = value;
+        span.appendChild(inputElement);
+        return inputElement;
+    }
+
+    let today = new Date();
+    let day = today.getDate();
+    let month = today.getMonth() + 1;
+    let year = today.getFullYear();
+    let hour = ""; // empty so saving saves an empty date
+    let minute = "00";
+
+    if (deadline !== undefined) {
+        day = deadline.getDate();
+        month = deadline.getMonth() + 1;
+        year = deadline.getFullYear();
+        hour = deadline.getHours();
+        minute = deadline.getMinutes();
+    }
+
+    addInputWithClass("deadline-input-day", day).focus();
+    addInputWithClass("deadline-input-month", month);
+    addInputWithClass("deadline-input-year", year);
+    addInputWithClass("deadline-input-hour", hour);
+    addInputWithClass("deadline-input-minute", minute);
+}
+
+function getDeadlineUnderCursor() {
+    let previous = getSavedElements();
+    let dl = previous[cursorPosition].deadline;
+    if (dl !== undefined) {
+        return new Date(dl);
+    }
+}
+
+function endDeadlineEditMode() {
+    deadlineEditMode = 0;
+    const day = document.getElementsByClassName("deadline-input-day")[0].value;
+    let month = document.getElementsByClassName("deadline-input-month")[0].value;
+    month -= 1; // js has 0-based month counting
+    const year = document.getElementsByClassName("deadline-input-year")[0].value;
+    const hour = document.getElementsByClassName("deadline-input-hour")[0].value;
+    const minute = document.getElementsByClassName("deadline-input-minute")[0].value;
+
+    let dl = new Date(year, month, day, hour, minute, 0, 0);
+    if (day == "" || month == "" || year == "" || hour == "" || minute == "") {
+        dl = undefined;
+    }
+
+    setDeadlineUnderCursor(dl);
     updateVisibleList();
 }
 
@@ -285,6 +360,12 @@ function setTextUnderCursor(text) {
 function setTypeUnderCursor(type) {
     let previous = getSavedElements();
     previous[cursorPosition].type = type;
+    saveData(previous);
+}
+
+function setDeadlineUnderCursor(deadline) {
+    let previous = getSavedElements();
+    previous[cursorPosition].deadline = deadline;
     saveData(previous);
 }
 
