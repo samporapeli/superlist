@@ -11,7 +11,7 @@
 }
 
 .deadline {
-    width: 130px;
+    width: 110px;
     display: inline-block;
     background-color: hsl(0, 100%, 80%);
     color: hsl(0, 100%, 100%);
@@ -30,9 +30,5 @@
 }
 
 .deadline-input-hour {
-    width: 14px;
-}
-
-.deadline-input-minute {
     width: 14px;
 }

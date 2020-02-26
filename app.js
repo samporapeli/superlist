@@ -224,21 +224,18 @@ function startDeadlineEditMode() {
     let month = today.getMonth() + 1;
     let year = today.getFullYear();
     let hour = ""; // empty so saving saves an empty date
-    let minute = "00";
 
     if (deadline !== undefined) {
         day = deadline.getDate();
         month = deadline.getMonth() + 1;
         year = deadline.getFullYear();
         hour = deadline.getHours();
-        minute = deadline.getMinutes();
     }
 
     addInputWithClass("deadline-input-day", day).focus();
     addInputWithClass("deadline-input-month", month);
     addInputWithClass("deadline-input-year", year);
     addInputWithClass("deadline-input-hour", hour);
-    addInputWithClass("deadline-input-minute", minute);
 }
 
 function getDeadlineUnderCursor() {
@@ -256,10 +253,9 @@ function endDeadlineEditMode() {
     month -= 1; // js has 0-based month counting
     const year = document.getElementsByClassName("deadline-input-year")[0].value;
     const hour = document.getElementsByClassName("deadline-input-hour")[0].value;
-    const minute = document.getElementsByClassName("deadline-input-minute")[0].value;
 
-    let dl = new Date(year, month, day, hour, minute, 0, 0);
-    if (day == "" || month == "" || year == "" || hour == "" || minute == "") {
+    let dl = new Date(year, month, day, hour, 0, 0, 0);
+    if (day == "" || month == "" || year == "" || hour == "") {
         dl = undefined;
     }
 
@@ -305,8 +301,7 @@ function updateVisibleList() {
                         month: "numeric",
                         day: "numeric",
                         weekday: "short",
-                        hour: "numeric",
-                        minute: "numeric"};
+                        hour: "numeric"};
                     deadlineSpan.innerText = deadlineTimestamp.toLocaleString('fi-FI', options);
                 }
 
