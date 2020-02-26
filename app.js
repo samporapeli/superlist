@@ -199,9 +199,9 @@ function updateVisibleList() {
 
     elementsWrapper.innerHTML = "";
 
-    let smallestIndentation = getIndentationAtCursor() - 1;
-    let minIndex = getIndexOfParent() || 0;
-    let maxIndex = getIndexOfLastAncestorOfParent();
+    let smallestIndentation = getIndentationAt(cursorPosition) - 1;
+    let minIndex = getIndexOfParent(cursorPosition) || 0;
+    let maxIndex = getIndexOfLastAncestorOfParent(cursorPosition);
 
     let lastIndentation = 0;
     elements.forEach(function(element, index) {
@@ -214,9 +214,8 @@ function updateVisibleList() {
             paddingSpan.classList.add("padding-lines");
             paddingSpan.appendChild(paddingText);
 
-            let deadline = "ke 23.12. 23:59";
             let deadlineSpan = document.createElement("div");
-            let deadlineText = document.createTextNode(deadline);
+            let deadlineText = document.createTextNode("");
             deadlineSpan.classList.add("deadline");
             deadlineSpan.appendChild(deadlineText);
 
@@ -224,6 +223,18 @@ function updateVisibleList() {
 
             if (element.indentation <= smallestIndentation + 1) {
                 var newDiv = document.createElement("div");
+
+                let deadlineTimestamp = getEarliestDeadlineOfAncestors(index);
+                if (deadlineTimestamp !== undefined) {
+                    let options = {
+                        month: "numeric",
+                        day: "numeric",
+                        weekday: "short",
+                        hour: "numeric",
+                        minute: "numeric"};
+                    deadlineSpan.innerText = deadlineTimestamp.toLocaleString('fi-FI', options);
+                }
+
                 newDiv.appendChild(deadlineSpan);
                 newDiv.appendChild(paddingSpan);
 
@@ -279,14 +290,14 @@ function setTypeUnderCursor(type) {
 
 function removeElementUnderCursor() {
     let previous = getSavedElements();
-    if (getIndexOfLastAncestor() > cursorPosition) {
+    if (getIndexOfLastAncestor(cursorPosition) > cursorPosition) {
         alert("Can't remove an element with ancestors.");
         return;
     }
-    let index = getIndexOfPreviousSibling();
+    let index = getIndexOfPreviousSibling(cursorPosition);
     if (index === undefined) {
         // if no siblings, go to parent
-        index = (getIndexOfNextSibling() || cursorPosition) - 1;
+        index = (getIndexOfNextSibling(cursorPosition) || cursorPosition) - 1;
         index = Math.max(0, index);
     }
     previous.splice(cursorPosition, 1);
@@ -297,28 +308,28 @@ function removeElementUnderCursor() {
 // Navigation with indentations
 
 function cursorToNextSibling() {
-    let index = getIndexOfNextSibling();
+    let index = getIndexOfNextSibling(cursorPosition);
     if (index !== undefined) {
         cursorTo(index);
     }
 }
 
 function cursorToPreviousSibling() {
-    let index = getIndexOfPreviousSibling();
+    let index = getIndexOfPreviousSibling(cursorPosition);
     if (index !== undefined) {
         cursorTo(index);
     }
 }
 
 function cursorToFirstChild() {
-    let index = getIndexOfFirstChild();
+    let index = getIndexOfFirstChild(cursorPosition);
     if (index !== undefined) {
         cursorTo(index);
     }
 }
 
 function cursorToParent() {
-    let index = getIndexOfParent();
+    let index = getIndexOfParent(cursorPosition);
     if (index !== undefined) {
         cursorTo(index);
     }
@@ -328,26 +339,26 @@ function cursorToParent() {
 // Adding
 
 function addNodeDown(type) {
-    const indentation = getIndentationAtCursor();
-    const index = getIndexOfLastAncestor() + 1;
+    const indentation = getIndentationAt(cursorPosition);
+    const index = getIndexOfLastAncestor(cursorPosition) + 1;
     addEmptyElementAtIndex(type, index, indentation);
     cursorTo(index);
 }
 
 function addNodeUp(type) {
-    const indentation = getIndentationAtCursor();
+    const indentation = getIndentationAt(cursorPosition);
     addEmptyElementAtIndex(type, cursorPosition, indentation);
     cursorUp();
 }
 
 function addNodeRight(type) {
-    const indentation = getIndentationAtCursor();
+    const indentation = getIndentationAt(cursorPosition);
     addEmptyElementAtIndex(type, cursorPosition+1, indentation+1);
     cursorDown();
 }
 
 function addNodeLeft(type) {
-    const indentation = getIndentationAtCursor();
+    const indentation = getIndentationAt(cursorPosition);
     increaseIndent();
     addEmptyElementAtIndex(type, cursorPosition, indentation);
     cursorUp();
@@ -357,8 +368,8 @@ function addNodeLeft(type) {
 
 function swapDown() {
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor();
-    const to = getIndexOfLastAncestorOfNextSibling();
+    const last = getIndexOfLastAncestor(cursorPosition);
+    const to = getIndexOfLastAncestorOfNextSibling(cursorPosition);
     if (to === undefined) {
         return;
     }
@@ -368,8 +379,8 @@ function swapDown() {
 
 function swapUp() {
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor();
-    const to = getIndexOfPreviousSibling();
+    const last = getIndexOfLastAncestor(cursorPosition);
+    const to = getIndexOfPreviousSibling(cursorPosition);
     if (to === undefined) {
         return;
     }
@@ -382,12 +393,12 @@ function increaseIndent() {
     let curr = previous[cursorPosition].indentation || 0;
 
     // Can't indentate first child
-    const parent = getIndexOfParent();
+    const parent = getIndexOfParent(cursorPosition);
     if (cursorPosition === 0 || parent === cursorPosition - 1) {
         return;
     }
 
-    const lastAncestor = getIndexOfLastAncestor();
+    const lastAncestor = getIndexOfLastAncestor(cursorPosition);
     for (let index = cursorPosition; index <= lastAncestor; index++) {
         previous[index].indentation += 1;
         console.log(index);
@@ -405,11 +416,11 @@ function decreaseIndent() {
 
     // Move to last sibling (but not yet)
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor();
-    const to = getIndexOfLastAncestorOfParent();
+    const last = getIndexOfLastAncestor(cursorPosition);
+    const to = getIndexOfLastAncestorOfParent(cursorPosition);
 
     // Decrease indent
-    const lastAncestor = getIndexOfLastAncestor();
+    const lastAncestor = getIndexOfLastAncestor(cursorPosition);
     for (let index = cursorPosition; index <= lastAncestor; index++) {
         previous[index].indentation -= 1;
     }
@@ -424,12 +435,12 @@ function decreaseIndent() {
 
 // Action helpers
 
-function getIndentationAtCursor() {
+function getIndentationAt(index) {
     let previous = getSavedElements();
     if (previous.length == 0) {
         return 0;
     }
-    return previous[cursorPosition].indentation;
+    return previous[index].indentation;
 }
 
 function swap(a, b) {
@@ -543,11 +554,11 @@ window.addEventListener("hashchange", readCursorPositionFromHash, false);
 
 
 // Hierarchical navigation
-function getIndexOfParent() {
+function getIndexOfParent(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let index = cursorPosition - 1;
+    let index = compareTo - 1;
     while (index >= 0) {
         if (elements[index].indentation < startingPointIndentation) {
             return index;
@@ -557,11 +568,11 @@ function getIndexOfParent() {
     }
 }
 
-function getIndexOfLastAncestorOfParent() {
+function getIndexOfLastAncestorOfParent(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let index = cursorPosition + 1;
+    let index = compareTo + 1;
     while (index < elements.length) {
         if (elements[index].indentation < startingPointIndentation) {
             return index - 1;
@@ -573,24 +584,24 @@ function getIndexOfLastAncestorOfParent() {
 }
 
 
-function getIndexOfFirstChild() {
+function getIndexOfFirstChild(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    if (cursorPosition == getSavedElements().length - 1) {
+    if (compareTo == getSavedElements().length - 1) {
         return;
     }
 
-    if (elements[cursorPosition + 1].indentation > startingPointIndentation) {
-        return cursorPosition + 1;
+    if (elements[compareTo + 1].indentation > startingPointIndentation) {
+        return compareTo + 1;
     }
 }
 
-function getIndexOfNextSibling() {
+function getIndexOfNextSibling(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let index = cursorPosition + 1;
+    let index = compareTo + 1;
     while (index < elements.length) {
         if (elements[index].indentation == startingPointIndentation) {
             return index;
@@ -603,11 +614,11 @@ function getIndexOfNextSibling() {
     }
 }
 
-function getIndexOfPreviousSibling() {
+function getIndexOfPreviousSibling(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let index = cursorPosition - 1;
+    let index = compareTo - 1;
     while (index >= 0) {
         if (elements[index].indentation == startingPointIndentation) {
             return index;
@@ -620,11 +631,11 @@ function getIndexOfPreviousSibling() {
     }
 }
 
-function getIndexOfLastAncestor() {
+function getIndexOfLastAncestor(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let index = cursorPosition + 1;
+    let index = compareTo + 1;
     while (index < elements.length) {
         if (elements[index].indentation <= startingPointIndentation) {
             return index - 1;
@@ -635,11 +646,11 @@ function getIndexOfLastAncestor() {
     return elements.length - 1;
 }
 
-function getIndexOfLastAncestorOfNextSibling() {
+function getIndexOfLastAncestorOfNextSibling(compareTo) {
     let elements = getSavedElements();
-    const startingPointIndentation = getIndentationAtCursor();
+    const startingPointIndentation = getIndentationAt(compareTo);
 
-    let sibling = getIndexOfNextSibling();
+    let sibling = getIndexOfNextSibling(compareTo);
     if (sibling === undefined) {
         return undefined;
     }
@@ -652,6 +663,35 @@ function getIndexOfLastAncestorOfNextSibling() {
 
         index += 1;
     }
+}
+
+
+
+// Dates/deadlines
+
+function getEarliestDeadlineOfAncestors(index) {
+    let elements = getSavedElements();
+    let earliestDeadline = undefined;
+    let firstIndex = index;
+    let lastIndex = getIndexOfLastAncestor(index);
+
+    while (index <= lastIndex) {
+        if (elements[index].deadline !== undefined) {
+            let newDeadline = new Date(elements[index].deadline);
+
+            if (index === firstIndex || elements[index].type !== "done") {
+                if (earliestDeadline === undefined) {
+                    earliestDeadline = newDeadline;
+
+                } else if (newDeadline < earliestDeadline) {
+                    earliestDeadline = newDeadline;
+                }
+            }
+        }
+
+        index += 1;
+    }
+    return earliestDeadline;
 }
 
 
