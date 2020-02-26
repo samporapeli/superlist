@@ -5,3 +5,14 @@
 .children-list {
     font-size: 8px;
 }
+
+.deadline {
+    width: 120px;
+    display: inline-block;
+    background-color: hsl(0, 100%, 80%);
+    color: hsl(0, 100%, 100%);
+}
+
+.padding-lines {
+    display: inline;
+}

@@ -209,10 +209,25 @@ function updateVisibleList() {
         if (index >= minIndex && index <= maxIndex) {
             // && element.indentation <= smallestIndentation + 1) {
             let padding = "— ".repeat(element.indentation);// - smallestIndentation);
+            let paddingSpan = document.createElement("div");
+            let paddingText = document.createTextNode(padding);
+            paddingSpan.classList.add("padding-lines");
+            paddingSpan.appendChild(paddingText);
+
+            let deadline = "ke 23.12. 23:59";
+            let deadlineSpan = document.createElement("div");
+            let deadlineText = document.createTextNode(deadline);
+            deadlineSpan.classList.add("deadline");
+            deadlineSpan.appendChild(deadlineText);
+
+            let emoji = nodeTypesToEmojis[element.type];
 
             if (element.indentation <= smallestIndentation + 1) {
                 var newDiv = document.createElement("div");
-                var newContent = document.createTextNode(padding + nodeTypesToEmojis[element.type] + " ");
+                newDiv.appendChild(deadlineSpan);
+                newDiv.appendChild(paddingSpan);
+
+                var newContent = document.createTextNode(emoji + " ");
                 if (index === cursorPosition) {
                     newDiv.classList.add("cursor-node");
                 }
@@ -225,11 +240,9 @@ function updateVisibleList() {
                 elementsWrapper.appendChild(newDiv);
 
             } else if (element.indentation == smallestIndentation + 2) {
-                let emoji = nodeTypesToEmojis[element.type];
+                deadlineSpan.innerText = "";
                 if (element.indentation > lastIndentation) {
-                    var paddingSpan = document.createElement("span");
-                    var paddingText = document.createTextNode(padding);
-                    paddingSpan.appendChild(paddingText);
+                    elementsWrapper.appendChild(deadlineSpan);
                     elementsWrapper.appendChild(paddingSpan);
 
                     var newSpan = document.createElement("span");
