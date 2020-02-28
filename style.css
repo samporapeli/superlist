@@ -2,6 +2,14 @@
     background-color: hsl(212, 100%, 80%);
 }
 
+a {
+    color: hsl(220, 90%, 45%);
+}
+
+a:hover {
+    color: hsl(220, 90%, 30%);
+}
+
 .children-list {
     font-size: 8px;
 }

@@ -317,7 +317,10 @@ function updateVisibleList() {
                 newDiv.appendChild(newContent);
 
                 var textElement = document.createElement("span");
-                textElement.innerText = element.text;
+                let text = element.text;
+                const urlRegex = /(\b([A-Z]+|):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig
+                text = text.replace(urlRegex, "<a href='$1'>$1</a>")
+                textElement.innerHTML = text;
                 newDiv.appendChild(textElement);
 
                 elementsWrapper.appendChild(newDiv);
