@@ -12,9 +12,38 @@
     </head>
     <body>
         <h1></h1>
+        <p>Keys:</p>
+        <ul>
+            <li>Arrow keys = Look around</li>
+            <ul>
+                <li>Up = Next item</li>
+                <li>Down = Previous item</li>
+                <li>Right = Subtasks</li>
+                <li>Left = Bigger picutre</li>
+            </ul>
+            <li>C/D/T/Q/W/X/F = Set item state</li>
+            <ul>
+                <li>C = "checkbox" = do this</li>
+                <li>D = done</li>
+                <li>T = text description</li>
+                <li>Q = idea / can be done but not needed</li>
+                <li>W = waiting / need to be done but cannot be worked on yet</li>
+                <li>X = cancelled / not to be done anymore</li>
+                <li>F = tried doing but failed</li>
+            </ul>
+            <li>C/D/T/Q/W/X/F + Arrow keys = Create new item</li>
+            <li>Backspace = Delete item</li>
+            <li>Cmd+alt + Arrow keys = Move active item around</li>
+            <li>Return = Edit item text or save edited text</li>
+            <li>S = Set schedule (deadline) for item. Day month year hour.</li>
+            <ul>
+                <li>Schedule propagates left unless the item is Done</li>
+            </ul>
+        </ul>
         <input type="text" id="export-data" onfocus="this.select();" onmouseup="return false;">
         <button>Import</button>
         <br><br>
         <span id="code"></span>
+        <br><br><br>
     </body>
 </html>
