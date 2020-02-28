@@ -372,7 +372,8 @@ function getEarliestDeadlineOfAncestors(index) {
         if (elements[index].deadline !== undefined) {
             let newDeadline = new Date(elements[index].deadline);
 
-            if (index === firstIndex || elements[index].type !== "done") {
+            if (index === firstIndex ||
+                (elements[index].type !== "done" && elements[index].type !== "cancelled")) {
                 if (earliestDeadline === undefined) {
                     earliestDeadline = newDeadline;
 
