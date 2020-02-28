@@ -264,7 +264,9 @@ function endDeadlineEditMode() {
 }
 
 function updateVisibleList() {
-    var elementsWrapper = document.getElementById("code");
+    let scrollPosition = window.scrollY;
+
+    let elementsWrapper = document.getElementById("code");
     const elements = getSavedElements();
     saveData(elements); // update the text box
 
@@ -340,4 +342,21 @@ function updateVisibleList() {
         }
         lastIndentation = element.indentation;
     });
+
+    // Scroll position
+    window.scrollTo(0, scrollPosition);
+
+    const cursorElement = getCursorElement();
+    const bounds = cursorElement.getBoundingClientRect();
+    const windowHeight = window.innerHeight;
+
+    if (bounds.top < windowHeight * 0.25) {
+        scrollPosition += bounds.top - windowHeight * 0.25;
+    }
+
+    if (bounds.bottom > windowHeight * 0.75) {
+        scrollPosition += bounds.bottom - windowHeight * 0.75;
+    }
+
+    window.scrollTo(0, scrollPosition);
 }
