@@ -353,12 +353,12 @@ function updateVisibleList() {
     const bounds = cursorElement.getBoundingClientRect();
     const windowHeight = window.innerHeight;
 
-    if (bounds.top < windowHeight * 0.25) {
-        scrollPosition += bounds.top - windowHeight * 0.25;
+    if (bounds.top < windowHeight * 0.3) {
+        scrollPosition += bounds.top - windowHeight * 0.3;
     }
 
-    if (bounds.bottom > windowHeight * 0.75) {
-        scrollPosition += bounds.bottom - windowHeight * 0.75;
+    if (bounds.bottom > windowHeight * 0.7) {
+        scrollPosition += bounds.bottom - windowHeight * 0.7;
     }
 
     window.scrollTo(0, scrollPosition);
