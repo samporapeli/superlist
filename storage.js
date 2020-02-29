@@ -22,16 +22,17 @@ function clampAndSaveCursorPosition() {
     console.log(document.location.hash);
 }
 
-function readCursorPositionFromHash() {
+function updateCursorPositionFromHash() {
     const position = parseInt(document.location.hash.substr(1));
     if (!isNaN(position)) {
         cursorTo(position);
     } else {
         cursorTo(0);
     }
+    updateVisibleList();
 }
 
-window.addEventListener("hashchange", readCursorPositionFromHash, false);
+window.addEventListener("hashchange", updateCursorPositionFromHash, false);
 
 
 

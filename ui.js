@@ -28,8 +28,7 @@ let deadlineEditMode = 0;
 var pressedKeys = {};
 
 window.addEventListener("load", function() {
-    readCursorPositionFromHash();
-    updateVisibleList();
+    updateCursorPositionFromHash();
 
     document.addEventListener("keydown", function(event) {
         pressedKeys[event.code] = true;
