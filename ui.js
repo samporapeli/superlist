@@ -326,6 +326,10 @@ function updateVisibleList() {
                 textElement.innerHTML = text;
                 newDiv.appendChild(textElement);
 
+                newDiv.addEventListener("click", event => {
+                    cursorToId(element.id);
+                }, false);
+
                 elementsWrapper.appendChild(newDiv);
 
             } else if (element.indentation == smallestIndentation + 2) {
@@ -352,7 +356,7 @@ function updateVisibleList() {
     // Window title
     if (elements.length > 0) {
         const cursorItem = elements[cursorPosition];
-        document.title = "Superlist – " + cursorItem.text;  
+        document.title = "Superlist – " + cursorItem.text;
     }
 
     // Scroll position

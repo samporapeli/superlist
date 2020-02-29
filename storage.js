@@ -15,6 +15,16 @@ function cursorTo(index) {
     clampAndSaveCursorPosition();
 }
 
+function cursorToId(id) {
+    let elements = getSavedElements();
+    for (let i = 0; i < elements.length; i++) {
+        if (elements[i].id === id) {
+            cursorTo(i);
+            return;
+        }
+    }
+}
+
 function clampAndSaveCursorPosition() {
     cursorPosition = Math.min(getSavedElements().length - 1, cursorPosition);
     cursorPosition = Math.max(0, cursorPosition);
@@ -30,15 +40,7 @@ function updateCursorPositionFromHash() {
     let position = 0;
 
     const id = document.location.hash.substr(1);
-    let elements = getSavedElements();
-    for (let i = 0; i < elements.length; i++) {
-        if (elements[i].id === id) {
-            position = i;
-            break;
-        }
-    }
-
-    cursorTo(position);
+    cursorToId(id);
     updateVisibleList();
 }
 
