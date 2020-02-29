@@ -18,17 +18,24 @@ function cursorTo(index) {
 function clampAndSaveCursorPosition() {
     cursorPosition = Math.min(getSavedElements().length - 1, cursorPosition);
     cursorPosition = Math.max(0, cursorPosition);
-    document.location.hash = cursorPosition;
+    let elements = getSavedElements();
+    document.location.hash = elements[cursorPosition].id;
     console.log(document.location.hash);
 }
 
 function updateCursorPositionFromHash() {
-    const position = parseInt(document.location.hash.substr(1));
-    if (!isNaN(position)) {
-        cursorTo(position);
-    } else {
-        cursorTo(0);
+    let position = 0;
+
+    const id = document.location.hash.substr(1);
+    let elements = getSavedElements();
+    for (let i = 0; i < elements.length; i++) {
+        if (elements[i].id === id) {
+            position = i;
+            break;
+        }
     }
+
+    cursorTo(position);
     updateVisibleList();
 }
 
@@ -47,9 +54,24 @@ function getSavedElements() {
 }
 
 function saveData(blob) {
+    for (let i = 0; i < blob.length; i++) {
+        if (blob[i].id === undefined) {
+            blob[i].id = generateUID();
+        }
+    }
+
     const asText = JSON.stringify(blob)
     saveEncodedData(asText);
     exportDataToTextBox(asText);
+}
+
+function generateUID() {
+    // ~155 bits of entropy
+    let id = "";
+    id += Math.random().toString(36).substring(2, 15);
+    id += Math.random().toString(36).substring(2, 15);
+    id += Math.random().toString(36).substring(2, 15);
+    return id.substring(0, 30);
 }
 
 function loadData() {
