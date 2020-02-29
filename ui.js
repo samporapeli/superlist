@@ -342,6 +342,11 @@ function updateVisibleList() {
                     newSpan.classList.add("children-list");
                     var newContent = document.createTextNode(emoji);
                     newSpan.appendChild(newContent);
+
+                    newSpan.addEventListener("click", event => {
+                        cursorToId(element.id);
+                    }, false);
+
                     elementsWrapper.appendChild(newSpan);
                 } else {
                     let spans = elementsWrapper.getElementsByTagName("span");
