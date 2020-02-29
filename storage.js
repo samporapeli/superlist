@@ -19,6 +19,9 @@ function clampAndSaveCursorPosition() {
     cursorPosition = Math.min(getSavedElements().length - 1, cursorPosition);
     cursorPosition = Math.max(0, cursorPosition);
     let elements = getSavedElements();
+    if (elements.length === 0) {
+        return;
+    }
     document.location.hash = elements[cursorPosition].id;
     console.log(document.location.hash);
 }
