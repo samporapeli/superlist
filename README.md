@@ -3,10 +3,10 @@ Hierarchical to-do list app
 
 ## Benefits compared to traditional to-do lists
 - You don't have to know how big your task is. Just add subtasks if it turns out to be big.
-- Focus on what you are doing. There are lots of things you need to do, but the app only shows only the subtasks of the piece you are working on right now.
+- Focus on what you are doing. There are lots of things you need to do, but the app only shows only the subtasks of the piece you are working on right now – yet keeps all your to-dos in one place.
 - When you are done with that thing, you'll get right back to where you were so you'll know what to do next.
-- If you get stuck with some item, break it down into smaller tasks. What if those smaller tasks stayed organized even when you have hundreds or thousands of them?
-- When looking at the bigger picture, the details (sub-subtasks) are hidden.
+- If you get stuck with some item, break it down into smaller tasks. What if those smaller tasks stayed effortlessly organized even when you have hundreds or thousands of them?
+- When looking at the bigger picture, the details (subtasks) are hidden so you don't have to stress about them.
 
 ## Tips for using
 - Try to break tasks down to 3–10 subtasks 👉.
@@ -16,7 +16,7 @@ Hierarchical to-do list app
 - Use 🦄 (idea) and 💤 (cancelled) to indicate tasks that are not as important but nice to keep around.
 
 ### I have so many tasks, where should I start?
-You can add deadlines to tasks (press S for schedule) to see which one you should work on next.
+You can add deadlines to tasks (press S for schedule) to see which one you should work on next. Precision is one hour.
 
 ## State and future of the app
 - I use this for my work every day so my goal is to have the app really functional and robust.
