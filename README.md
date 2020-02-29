@@ -19,7 +19,8 @@ Hierarchical to-do list app
 You can add deadlines to tasks (press S for schedule) to see which one you should work on next.
 
 ## State and future of the app
-- I use this for my work every day so my goal is to have the app really functional.
+- I use this for my work every day so my goal is to have the app really functional and robust.
+- It will never be robust enough, so there is functionality for making backups easily.
 - However, as this is not (yet?) a commercial project, the learning curve might be a bit steep.
 - For example the app uses only keyboard input at the moment. Mouse does not do anything and touchscreen platforms are not supported.
 - There are no UI animations and very little styling. The app can feel a bit bleak. :)
