@@ -15,5 +15,12 @@ Hierarchical to-do list app
 - Use ❌ (failed) and ⏳ (waiting) to indicate tasks that might need help  from other people before continuing.
 - Use 🦄 (idea) and 💤 (cancelled) to indicate tasks that are not as important but nice to keep around.
 
-## I have so many tasks, where should I start?
+### I have so many tasks, where should I start?
 You can add deadlines to tasks (press S for schedule) to see which one you should work on next.
+
+## State and future of the app
+- I use this for my work every day so my goal is to have the app really functional.
+- However as this is not (yet?) a commercial project, the learning curve might be a bit steep.
+- For example the app uses only keyboard input at the moment. Mouse does not do anything and touchscreen platforms are not supported.
+- Also there are no UI animations and very little styling. The app can feel a bit bleak. :)
+- I want to make the app look pretty at some point though. Good feel is important for productivity.
