@@ -56,7 +56,7 @@ function loadData() {
     return JSON.parse(asText);
 }
 
-const localStorageKey = "todoapp-data";
+const localStorageKey = "superlist-data";
 
 function saveEncodedData(text) {
     localStorage.setItem(localStorageKey, text);

@@ -350,6 +350,9 @@ function updateVisibleList() {
     window.scrollTo(0, scrollPosition);
 
     const cursorElement = getCursorElement();
+    if (cursorElement === undefined) {
+        return;
+    }
     const bounds = cursorElement.getBoundingClientRect();
     const windowHeight = window.innerHeight;
 
