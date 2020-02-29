@@ -20,7 +20,8 @@ You can add deadlines to tasks (press S for schedule) to see which one you shoul
 
 ## State and future of the app
 - I use this for my work every day so my goal is to have the app really functional.
-- However as this is not (yet?) a commercial project, the learning curve might be a bit steep.
+- However, as this is not (yet?) a commercial project, the learning curve might be a bit steep.
 - For example the app uses only keyboard input at the moment. Mouse does not do anything and touchscreen platforms are not supported.
-- Also there are no UI animations and very little styling. The app can feel a bit bleak. :)
+- There are no UI animations and very little styling. The app can feel a bit bleak. :)
 - I want to make the app look pretty at some point though. Good feel is important for productivity.
+- Also, syncing between devices.
