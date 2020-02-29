@@ -263,6 +263,10 @@ function endDeadlineEditMode() {
 }
 
 function updateVisibleList() {
+    if (editMode === 1 || deadlineEditMode === 1) {
+        return;
+    }
+
     let scrollPosition = window.scrollY;
 
     let elementsWrapper = document.getElementById("code");
