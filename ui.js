@@ -349,6 +349,12 @@ function updateVisibleList() {
         lastIndentation = element.indentation;
     });
 
+    // Window title
+    if (elements.length > 0) {
+        const cursorItem = elements[cursorPosition];
+        document.title = "Superlist – " + cursorItem.text;  
+    }
+
     // Scroll position
     window.scrollTo(0, scrollPosition);
 
@@ -356,6 +362,7 @@ function updateVisibleList() {
     if (cursorElement === undefined) {
         return;
     }
+
     const bounds = cursorElement.getBoundingClientRect();
     const windowHeight = window.innerHeight;
 
