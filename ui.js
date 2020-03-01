@@ -328,6 +328,14 @@ function updateVisibleList() {
                 var newContent = document.createTextNode(emoji + " ");
                 if (index === cursorPosition) {
                     newDiv.classList.add("cursor-node");
+                    newDiv.addEventListener("click", event => {
+                        startEditMode();
+                    }, false);
+
+                } else {
+                    newDiv.addEventListener("click", event => {
+                        cursorToId(element.id);
+                    }, false);
                 }
                 newDiv.appendChild(newContent);
 
@@ -337,10 +345,6 @@ function updateVisibleList() {
                 text = text.replace(urlRegex, "<a href='$1'>$1</a>")
                 textElement.innerHTML = text;
                 newDiv.appendChild(textElement);
-
-                newDiv.addEventListener("click", event => {
-                    cursorToId(element.id);
-                }, false);
 
                 elementsWrapper.appendChild(newDiv);
 
