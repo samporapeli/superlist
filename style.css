@@ -2,6 +2,10 @@
     cursor: default;
 }
 
+.list-item-change-view {
+    cursor: pointer;
+}
+
 .cursor-node {
     background-color: hsl(212, 100%, 80%);
 }

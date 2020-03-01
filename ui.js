@@ -308,6 +308,10 @@ function updateVisibleList() {
                 var newDiv = document.createElement("div");
                 newDiv.classList.add("list-item");
 
+                if (directAncestors.includes(index)) {
+                    newDiv.classList.add("list-item-change-view");
+                }
+
                 let deadlineTimestamp = getEarliestDeadlineOfDescendants(index);
                 if (deadlineTimestamp !== undefined) {
                     let options = {
