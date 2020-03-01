@@ -306,6 +306,7 @@ function updateVisibleList() {
 
             if (element.indentation <= smallestIndentation + 1) {
                 var newDiv = document.createElement("div");
+                newDiv.classList.add("list-item");
 
                 let deadlineTimestamp = getEarliestDeadlineOfDescendants(index);
                 if (deadlineTimestamp !== undefined) {

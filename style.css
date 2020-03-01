@@ -1,3 +1,7 @@
+.list-item {
+    cursor: default;
+}
+
 .cursor-node {
     background-color: hsl(212, 100%, 80%);
 }
@@ -12,10 +16,12 @@ a:hover {
 
 .children-list {
     font-size: 8px;
+    cursor: pointer;
 }
 
 .padding-lines {
     display: inline;
+    cursor: default;
 }
 
 .deadline {
