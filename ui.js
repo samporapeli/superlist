@@ -277,7 +277,7 @@ function updateVisibleList() {
 
     let smallestIndentation = getIndentationAt(cursorPosition) - 1;
     let minIndex = getIndexOfParent(cursorPosition) || 0;
-    let maxIndex = getIndexOfLastAncestorOfParent(cursorPosition);
+    let maxIndex = getIndexOfLastDescendantOfParent(cursorPosition);
 
     let lastIndentation = 0;
     elements.forEach(function(element, index) {
@@ -300,7 +300,7 @@ function updateVisibleList() {
             if (element.indentation <= smallestIndentation + 1) {
                 var newDiv = document.createElement("div");
 
-                let deadlineTimestamp = getEarliestDeadlineOfAncestors(index);
+                let deadlineTimestamp = getEarliestDeadlineOfDescendants(index);
                 if (deadlineTimestamp !== undefined) {
                     let options = {
                         month: "numeric",

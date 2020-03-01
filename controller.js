@@ -20,8 +20,8 @@ function setDeadlineUnderCursor(deadline) {
 
 function removeElementUnderCursor() {
     let previous = getSavedElements();
-    if (getIndexOfLastAncestor(cursorPosition) > cursorPosition) {
-        alert("Can't remove an element with ancestors.");
+    if (getIndexOfLastDescendant(cursorPosition) > cursorPosition) {
+        alert("Can't remove an element with descendants.");
         return;
     }
     let index = getIndexOfPreviousSibling(cursorPosition);
@@ -70,7 +70,7 @@ function cursorToParent() {
 
 function addNodeDown(type) {
     const indentation = getIndentationAt(cursorPosition);
-    const index = getIndexOfLastAncestor(cursorPosition) + 1;
+    const index = getIndexOfLastDescendant(cursorPosition) + 1;
     addEmptyElementAtIndex(type, index, indentation);
     cursorTo(index);
 }
@@ -98,8 +98,8 @@ function addNodeLeft(type) {
 
 function swapDown() {
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor(cursorPosition);
-    const to = getIndexOfLastAncestorOfNextSibling(cursorPosition);
+    const last = getIndexOfLastDescendant(cursorPosition);
+    const to = getIndexOfLastDescendantOfNextSibling(cursorPosition);
     if (to === undefined) {
         return;
     }
@@ -109,7 +109,7 @@ function swapDown() {
 
 function swapUp() {
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor(cursorPosition);
+    const last = getIndexOfLastDescendant(cursorPosition);
     const to = getIndexOfPreviousSibling(cursorPosition);
     if (to === undefined) {
         return;
@@ -128,8 +128,8 @@ function increaseIndent() {
         return;
     }
 
-    const lastAncestor = getIndexOfLastAncestor(cursorPosition);
-    for (let index = cursorPosition; index <= lastAncestor; index++) {
+    const lastDescendant = getIndexOfLastDescendant(cursorPosition);
+    for (let index = cursorPosition; index <= lastDescendant; index++) {
         previous[index].indentation += 1;
         console.log(index);
     }
@@ -146,12 +146,12 @@ function decreaseIndent() {
 
     // Move to last sibling (but not yet)
     const first = cursorPosition;
-    const last = getIndexOfLastAncestor(cursorPosition);
-    const to = getIndexOfLastAncestorOfParent(cursorPosition);
+    const last = getIndexOfLastDescendant(cursorPosition);
+    const to = getIndexOfLastDescendantOfParent(cursorPosition);
 
     // Decrease indent
-    const lastAncestor = getIndexOfLastAncestor(cursorPosition);
-    for (let index = cursorPosition; index <= lastAncestor; index++) {
+    const lastDescendant = getIndexOfLastDescendant(cursorPosition);
+    for (let index = cursorPosition; index <= lastDescendant; index++) {
         previous[index].indentation -= 1;
     }
     saveData(previous);
@@ -261,7 +261,7 @@ function getIndexOfParent(compareTo) {
     }
 }
 
-function getIndexOfLastAncestorOfParent(compareTo) {
+function getIndexOfLastDescendantOfParent(compareTo) {
     let elements = getSavedElements();
     const startingPointIndentation = getIndentationAt(compareTo);
 
@@ -324,7 +324,7 @@ function getIndexOfPreviousSibling(compareTo) {
     }
 }
 
-function getIndexOfLastAncestor(compareTo) {
+function getIndexOfLastDescendant(compareTo) {
     let elements = getSavedElements();
     const startingPointIndentation = getIndentationAt(compareTo);
 
@@ -339,7 +339,7 @@ function getIndexOfLastAncestor(compareTo) {
     return elements.length - 1;
 }
 
-function getIndexOfLastAncestorOfNextSibling(compareTo) {
+function getIndexOfLastDescendantOfNextSibling(compareTo) {
     let elements = getSavedElements();
     const startingPointIndentation = getIndentationAt(compareTo);
 
@@ -362,11 +362,11 @@ function getIndexOfLastAncestorOfNextSibling(compareTo) {
 
 // Dates/deadlines
 
-function getEarliestDeadlineOfAncestors(index) {
+function getEarliestDeadlineOfDescendants(index) {
     let elements = getSavedElements();
     let earliestDeadline = undefined;
     let firstIndex = index;
-    let lastIndex = getIndexOfLastAncestor(index);
+    let lastIndex = getIndexOfLastDescendant(index);
 
     while (index <= lastIndex) {
         if (elements[index].deadline !== undefined) {
