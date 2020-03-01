@@ -159,6 +159,17 @@ window.addEventListener("load", function() {
         cursorTo(0);
         updateVisibleList();
     });
+
+    document.body.addEventListener("click", event => {
+        if (editMode === 1) {
+            if (!event.target.matches(".input-text")) {
+                endEditMode();
+                if (event.target.matches(".cursor-node")) {
+                    event.stopPropagation();
+                }
+            }
+        }
+    }, true);
 });
 
 
@@ -166,6 +177,9 @@ window.addEventListener("load", function() {
 // Rendering
 
 function startEditMode() {
+    if (editMode === 1) {
+        return;
+    }
     editMode = 1;
 
     const element = getCursorElement();
