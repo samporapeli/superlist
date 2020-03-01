@@ -279,10 +279,17 @@ function updateVisibleList() {
     let minIndex = getIndexOfParent(cursorPosition) || 0;
     let maxIndex = getIndexOfLastDescendantOfParent(cursorPosition);
 
+    let directAncestors = [];
+    let i = cursorPosition;
+    while (i > 0) {
+        i = getIndexOfParent(i);
+        directAncestors.push(i);
+    }
+
     let lastIndentation = 0;
     elements.forEach(function(element, index) {
 
-        if (index >= minIndex && index <= maxIndex) {
+        if ((index >= minIndex && index <= maxIndex) || directAncestors.includes(index)) {
             // && element.indentation <= smallestIndentation + 1) {
             let padding = " " + "— ".repeat(element.indentation);// - smallestIndentation);
             let paddingSpan = document.createElement("div");
